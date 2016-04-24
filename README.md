@@ -1,1 +1,1 @@
-# start_theme_wordpress
+# Стартовая тема для wordpress
