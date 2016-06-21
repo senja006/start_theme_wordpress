@@ -23,6 +23,22 @@ function my_theme_register_required_plugins()
             'slug' => 'jetpack-widget-visibility',
             'required' => true,
         ),
+        array(
+            'name'               => 'GitHub Updater',
+            'slug'               => 'github-updater',
+            'source'             => 'https://github.com/afragen/github-updater/archive/5.4.1.zip',
+            'required'           => true, // this plugin is required
+            'external_url'       => 'https://github.com/afragen/github-updater', // page of my plugin
+            'force_deactivation' => true, // deactivate this plugin when the user switches to another theme
+        ),
+        array(
+            'name'               => 'WP Sync DB',
+            'slug'               => 'wp-sync-db',
+            'source'             => 'https://github.com/wp-sync-db/wp-sync-db/archive/1.5.zip',
+            'required'           => true, // this plugin is required
+            'external_url'       => 'https://github.com/wp-sync-db/wp-sync-db', // page of my plugin
+            'force_deactivation' => true, // deactivate this plugin when the user switches to another theme
+        )
 
     );
 
@@ -171,3 +187,71 @@ function deregister_default_scripts()
 }
 
 add_action('wp_print_scripts', 'deregister_default_scripts', 100);
+
+/**
+ * Настройка темы
+ */
+
+function set_theme_options()
+{
+    add_theme_support('title-tag');
+
+    //add_theme_support( 'post-thumbnails' );
+    //set_post_thumbnail_size( 825, 510, true );
+
+//    register_nav_menus( array(
+//        'header_menu' => 'Меню в шапке',
+//        'footer_menu' => 'Меню в подвале'
+//    ) );
+
+    add_theme_support('custom-logo', array(
+        'height' => 248,
+        'width' => 248,
+        'flex-height' => true,
+    ));
+}
+
+add_action('after_setup_theme', 'set_theme_options');
+
+
+/**
+ * Регистрация мест размещения виджетов
+ */
+
+function register_my_widgets()
+{
+    register_sidebar(array(
+        'name' => 'Левый сайдбар',
+        'id' => "sidebar-left",
+        'description' => '',
+        'class' => '',
+        'before_widget' => '',
+        'after_widget' => "",
+        'before_title' => '',
+        'after_title' => ""
+    ));
+}
+
+//add_action('widgets_init', 'register_my_widgets');
+
+
+/**
+ * Подключение стилей и скриптов
+ */
+
+function add_styles_and_scripts()
+{
+    wp_enqueue_style('my-style', get_template_directory_uri() . '/static/css/main.css');
+    wp_enqueue_script('my-script', get_template_directory_uri() . '/static/js/main.js', array(), '', true);
+}
+
+function add_async_attribute($tag, $handle)
+{
+    if ('my-script' !== $handle) {
+        return $tag;
+    }
+    return str_replace(' src', ' async src', $tag);
+}
+
+add_action('wp_enqueue_scripts', 'add_styles_and_scripts');
+add_filter('script_loader_tag', 'add_async_attribute', 10, 2);
