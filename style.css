@@ -3,3 +3,15 @@ Theme Name: Стартовая тема
 Author: Sergey Yarkevich
 Author URI: http://yarkevich.ru/
 */
+
+.customize-control-image img {
+    width: auto;
+}
+
+.customize-control-cropped_image img {
+    width: auto;
+}
+
+.site-icon-preview .app-icon-preview {
+    background: none;
+}
