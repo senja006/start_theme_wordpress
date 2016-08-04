@@ -384,3 +384,14 @@ function set_names_choose_template( $sizes ) {
 }
 
 add_filter( 'image_size_names_choose', 'set_names_choose_template' );
+
+
+/**
+ * Уведомление в админке
+ */
+function my_notification() {
+	echo ' <div class="error">
+	<p>Мы собираемся перевести сайт в режим технических работ. Пожалуйста, не делайте никаких изменений до 18:00.</p>
+	</div>';
+}
+add_action( 'admin_notices', ' my_notification ' );
