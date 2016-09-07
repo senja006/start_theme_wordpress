@@ -296,7 +296,7 @@ function send_template_form() {
 		$data['errors'][] = 'email';
 	}
 
-	if ( ! $data['errors'] ) {
+	if ( ! isset( $data['errors'] ) ) {
 		$subscriber = new WP_Query( array(
 			'post_type'  => 'subscriber',
 			'meta_query' => array(

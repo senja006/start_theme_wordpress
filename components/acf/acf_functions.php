@@ -67,7 +67,7 @@ add_action( 'register_acf_components', 'register_acf_components', 10, 1 );
  */
 
 function get_my_components( $arr ) {
-	$components = [ ];
+	$components = array();
 	foreach ( $arr as $component ) {
 		$name                = $component['acf_fc_layout'];
 		$components[ $name ] = $component;
