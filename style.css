@@ -15,3 +15,7 @@ Author URI: http://yarkevich.ru/
 .site-icon-preview .app-icon-preview {
     background: none;
 }
+
+.wp-list-table.fixed {
+    table-layout: auto;
+}

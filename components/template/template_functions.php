@@ -10,8 +10,8 @@ function register_name_widgets() {
 		'id'            => 'header-left',
 		'description'   => '',
 		'class'         => '',
-		'before_widget' => '',
-		'after_widget'  => '',
+		'before_widget' => '/components/sidebar/sidebar_before.php',
+		'after_widget'  => '/components/sidebar/sidebar_after.php',
 		'before_title'  => '',
 		'after_title'   => ''
 	) );
@@ -30,7 +30,6 @@ class Template_Widget extends WP_Widget {
 //			'customize_selective_refresh' => true,
 		);
 		parent::__construct( 'template_widget', 'Заголовок', $widget_ops );
-		add_filter( 'siteorigin_panels_widgets', array( $this, 'remove_widget_from_page_builder' ), 11 );
 
 //		if ( is_active_widget( false, false, $this->id_base ) || is_customize_preview() ) {
 //			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts_customizer' ) );
@@ -44,14 +43,8 @@ class Template_Widget extends WP_Widget {
 //		), true );
 //	}
 
-	public function remove_widget_from_page_builder( $widgets ) {
-		unset( $widgets['Template_Widget'] );
-
-		return $widgets;
-	}
-
 	public function widget( $args, $instance ) {
-		echo $args['before_widget'];
+		require TEMPLATEPATH . $args['before_widget'];
 
 		if ( ! empty( $instance['title'] ) && empty( $instance['subtitle'] ) ) {
 			echo $args['before_title'] . $instance['title'] . $args['after_title'];
@@ -60,7 +53,7 @@ class Template_Widget extends WP_Widget {
 		}
 
 		include 'template.php';
-		echo $args['after_widget'];
+		require TEMPLATEPATH . $args['after_widget'];
 	}
 
 	public function form( $instance ) {
@@ -68,12 +61,15 @@ class Template_Widget extends WP_Widget {
 		$subtitle = ! empty( $instance['subtitle'] ) ? $instance['subtitle'] : '';
 		$href     = ! empty( $instance['href'] ) ? $instance['href'] : '';
 		$color    = ! empty( $instance['color'] ) ? $instance['color'] : 'light-pink';
+		$is_responsive = isset( $instance['is_responsive'] ) ? $instance['is_responsive'] : '';
 
 		?>
-		<p><label for="<?php echo $this->get_field_id( 'title' ); ?>">Заголовок:</label>
+		<p>
+			<label for="<?php echo $this->get_field_id( 'title' ); ?>">Заголовок:</label>
 			<input class="widefat" id="<?php echo $this->get_field_id( 'title' ); ?>"
 			       name="<?php echo $this->get_field_name( 'title' ); ?>" type="text"
-			       value="<?php echo esc_attr( $title ); ?>"/></p>
+			       value="<?php echo esc_attr( $title ); ?>"/>
+		</p>
 		<p><label for="<?php echo $this->get_field_id( 'subtitle' ); ?>">Подзаголовок:</label>
 			<input class="widefat" id="<?php echo $this->get_field_id( 'subtitle' ); ?>"
 			       name="<?php echo $this->get_field_name( 'subtitle' ); ?>" type="text"
@@ -94,7 +90,13 @@ class Template_Widget extends WP_Widget {
 				<option value="blue"<?php echo ( $color == 'blue' ) ? 'selected' : ''; ?>>Синий</option>
 			</select>
 		</p>
+		<p>
+			<label for="<?php echo $this->get_field_id( 'is_responsive' ); ?>">Трансформировать в мобильное меню?</label>
+			<input type="checkbox" id="<?php echo $this->get_field_id( 'is_responsive' ); ?>"
+			       name="<?php echo $this->get_field_name( 'is_responsive' ); ?>" <?php echo $is_responsive ? 'checked' : '' ?>>
+		</p>
 		<?php
+		require TEMPLATEPATH . '/components/sidebar/sidebar_form.php';
 	}
 
 	public function update( $new_instance, $old_instance ) {
@@ -148,6 +150,30 @@ function customize_register_template( $wp_customize ) {
 			)
 		)
 	);
+
+	$pages     = get_pages();
+	$pages_arr = array(
+		'' => '— Выбрать —'
+	);
+	foreach ( $pages as $page ) {
+		$pages_arr[ $page->ID ] = $page->post_title;
+	}
+	wp_reset_postdata();
+
+	$wp_customize->add_control(
+		new WP_Customize_Control(
+			$wp_customize,
+			'pages_courses',
+			array(
+				'label'       => 'Страница курсов',
+				'section'     => 'static_front_page',
+				'settings'    => 'pages_courses',
+				'description' => 'Эта страница выводит курсы',
+				'type'        => 'select',
+				'choices'     => $pages_arr
+			)
+		)
+	);
 }
 
 add_action( 'customize_register', 'customize_register_template' );
@@ -175,7 +201,7 @@ function register_post_type_template() {
 			'menu_name'          => 'Соц. сети'
 		),
 		'description'         => '',
-		'public'              => false,
+		'public'              => true,
 		'publicly_queryable'  => false,
 		'exclude_from_search' => true,
 		'show_ui'             => true,
@@ -183,7 +209,7 @@ function register_post_type_template() {
 		'menu_position'       => null,
 		'menu_icon'           => 'dashicons-share',
 		'hierarchical'        => false,
-		'supports'            => array( 'title' ),
+		'supports'            => array( 'title', 'editor', 'thumbnail' ),
 		'taxonomies'          => array(),
 		'has_archive'         => false,
 		'rewrite'             => false,
@@ -239,36 +265,48 @@ function create_taxonomy_template() {
 	// параметры
 	$args = array(
 		'label'                 => '',
-		// определяется параметром $labels->name
 		'labels'                => $labels,
 		'description'           => '',
-		// описание таксономии
 		'public'                => true,
 		'publicly_queryable'    => null,
-		// равен аргументу public
 		'show_in_nav_menus'     => true,
-		// равен аргументу public
 		'show_ui'               => true,
-		// равен аргументу public
 		'show_tagcloud'         => true,
-		// равен аргументу show_ui
-		'hierarchical'          => true,
+		'hierarchical'          => true, // обязательно true. иначе будут проблемы
 		'update_count_callback' => '',
 		'rewrite'               => true,
-		//'query_var'             => $taxonomy, // название параметра запроса
+//		'query_var'             => $taxonomy, // название параметра запроса
 		'capabilities'          => array(),
 		'meta_box_cb'           => null,
-		// callback функция. Отвечает за html код метабокса (с версии 3.8): post_categories_meta_box или post_tags_meta_box. Если указать false, то метабокс будет отключен вообще
 		'show_admin_column'     => true,
-		// Позволить или нет авто-создание колонки таксономии в таблице ассоциированного типа записи. (с версии 3.5)
 		'_builtin'              => false,
 		'show_in_quick_edit'    => null,
-		// по умолчанию значение show_ui
 	);
 	register_taxonomy( 'category_template', array(), $args );
 }
 
 add_action( 'init', 'create_taxonomy_template' );
+
+
+/**
+ * Вывод дополнительных столбцов на админ экран и добавление сортировки
+ */
+function add_new_service_columns( $columns ) {
+	$columns['cost'] = 'Стоимость';
+
+	return $columns;
+}
+
+function show_content_service_columns( $column_name, $post_ID ) {
+	if ( $column_name == 'cost' ) {
+		$cost = get_field( 'cost' );
+		echo $cost ? $cost : 0;
+	}
+}
+
+add_filter( 'manage_service_posts_columns', 'add_new_service_columns' );
+add_action( 'manage_service_posts_custom_column', 'show_content_service_columns', 10, 2 );
+add_filter( 'manage_edit-service_sortable_columns', 'add_new_service_columns' );
 
 
 /**

@@ -3,61 +3,65 @@
 /**
  * Регистрация виджета
  */
-class Text_Widget extends WP_Widget_Text {
+class Text_Widget extends WP_Widget {
 
 	public function __construct() {
-		parent::__construct();
+		$widget_ops = array(
+			'description' => 'Текст или html'
+		);
+		parent::__construct( 'text_widget', 'Текст', $widget_ops );
 	}
 
 	public function widget( $args, $instance ) {
-
-		/** This filter is documented in wp-includes/widgets/class-wp-widget-pages.php */
-		$title = apply_filters( 'widget_title', empty( $instance['title'] ) ? '' : $instance['title'], $instance, $this->id_base );
-
-		$widget_text = ! empty( $instance['text'] ) ? $instance['text'] : '';
-
-		/**
-		 * Filter the content of the Text widget.
-		 *
-		 * @since 2.3.0
-		 * @since 4.4.0 Added the `$this` parameter.
-		 *
-		 * @param string $widget_text The widget content.
-		 * @param array $instance Array of settings for the current widget.
-		 * @param WP_Widget_Text $this Current Text widget instance.
-		 */
-		$text = apply_filters( 'widget_text', $widget_text, $instance, $this );
-
-		echo $args['before_widget'];
-		if ( ! empty( $title ) ) {
-			echo $args['before_title'] . $title . $args['after_title'];
-		} ?>
-		<div class="ya-text"><?php echo ! empty( $instance['filter'] ) ? wpautop( $text ) : $text; ?></div>
-		<?php
-		echo $args['after_widget'];
+		require TEMPLATEPATH . $args['before_widget'];
+		include 'text_widget.php';
+		require TEMPLATEPATH . $args['after_widget'];
 	}
 
+	public function form( $instance ) {
+		$reset_typography_styles = ! empty( $instance['reset_typography_styles'] ) ? $instance['reset_typography_styles'] : '';
+		$text                    = ! empty( $instance['text'] ) ? $instance['text'] : '';
+		?>
+		<p>
+			<label for="<?php echo $this->get_field_id( 'text' ); ?>">Текст:</label>
+			<textarea class="widefat" id="<?php echo $this->get_field_id( 'text' ); ?>"
+			          name="<?php echo $this->get_field_name( 'text' ); ?>"
+			          rows="8"><?php echo esc_attr( $text ); ?></textarea>
+		</p>
+		<p>
+			<input type="checkbox" id="<?php echo $this->get_field_id( 'reset_typography_styles' ); ?>"
+			       name="<?php echo $this->get_field_name( 'reset_typography_styles' ); ?>"
+			       value="ya-reset-typography-styles" <?php checked( $reset_typography_styles, 'ya-reset-typography-styles' ); ?>>
+			<label for="<?php echo $this->get_field_id( 'reset_typography_styles' ); ?>">сброс стилей для основного
+				текста</label>
+		</p>
+		<?php
+		require TEMPLATEPATH . '/components/sidebar/sidebar_form.php';
+	}
+
+	public function update( $new_instance, $old_instance ) {
+		return $new_instance;
+	}
 }
 
 add_action( 'widgets_init', function () {
 	register_widget( 'Text_Widget' );
 } );
 
-
 /**
- * Компонент acf
+ * Новый компонент acf flexible
  */
 
 $components_acf[] = array(
-	'key'        => '57973e7aabf57',
+	'key'        => '57d7928e53045',
 	'name'       => 'text',
 	'label'      => 'Текст',
 	'display'    => 'block',
 	'sub_fields' => array(
 		array(
-			'key'               => 'field_57973e98abf58',
+			'key'               => 'field_57d7932ae6621',
 			'label'             => 'Колонки',
-			'name'              => 'rows',
+			'name'              => 'cols_list',
 			'type'              => 'repeater',
 			'instructions'      => '',
 			'required'          => 0,
@@ -69,11 +73,11 @@ $components_acf[] = array(
 			),
 			'min'               => '',
 			'max'               => '',
-			'layout'            => 'block',
+			'layout'            => 'table',
 			'button_label'      => 'Добавить колонку',
 			'sub_fields'        => array(
 				array(
-					'key'               => 'field_57973ec1abf59',
+					'key'               => 'field_57d799a4e6622',
 					'label'             => 'Текст',
 					'name'              => 'text',
 					'type'              => 'wysiwyg',
@@ -86,13 +90,11 @@ $components_acf[] = array(
 						'id'    => '',
 					),
 					'default_value'     => '',
-					'tabs'              => 'visual',
+					'tabs'              => 'all',
 					'toolbar'           => 'full',
 					'media_upload'      => 1,
 				),
 			),
-		),
-	),
-	'min'        => '',
-	'max'        => '',
+		)
+	)
 );

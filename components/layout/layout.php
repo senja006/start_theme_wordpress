@@ -9,12 +9,10 @@
 						$component_name = get_row_layout();
 						require TEMPLATEPATH . '/components/' . $component_name . '/' . $component_name . '.php';
 					}
-				} else {
-					if ( have_posts() ) {
-						while ( have_posts() ) : the_post();
-							the_content();
-						endwhile;
-					}
+				} elseif ( have_posts() ) {
+					while ( have_posts() ) : the_post();
+						the_content();
+					endwhile;
 				}
 				?>
 			</div>

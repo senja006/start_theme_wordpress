@@ -149,7 +149,7 @@ function unregister_default_wp_widgets()
     unregister_widget('WP_Widget_Links');
     unregister_widget('WP_Widget_Meta');
     unregister_widget('WP_Widget_Search');
-//    unregister_widget('WP_Widget_Text');
+    unregister_widget('WP_Widget_Text');
     unregister_widget('WP_Widget_Categories');
     unregister_widget('WP_Widget_Recent_Posts');
     unregister_widget('WP_Widget_Recent_Comments');
@@ -194,6 +194,7 @@ function set_theme_options()
 
 add_action('after_setup_theme', 'set_theme_options');
 add_filter( 'wp_calculate_image_srcset', '__return_null' );
+add_filter( 'jpeg_quality', create_function( '', 'return 80;' ) );
 
 
 /**

@@ -10,16 +10,42 @@ class Logo_Widget extends WP_Widget {
 			'description' => 'Логотип сайта',
 		);
 		parent::__construct( 'logo_widget', 'Логотип', $widget_ops );
+		add_action( 'admin_enqueue_scripts', array( $this, 'upload_scripts' ) );
+	}
+
+	public function upload_scripts() {
+		wp_enqueue_script( 'media-upload' );
+		wp_enqueue_script( 'thickbox' );
+		wp_enqueue_script( 'upload_media_widget', get_template_directory_uri() . '/components/logo/logo_upload_media.js', array( 'jquery' ) );
+		wp_enqueue_style( 'thickbox' );
 	}
 
 	public function widget( $args, $instance ) {
-		echo $args['before_widget'];
+		require TEMPLATEPATH . $args['before_widget'];
 		include 'logo.php';
-		echo $args['after_widget'];
+		require TEMPLATEPATH . $args['after_widget'];
 	}
 
 	public function form( $instance ) {
-		echo '<p></p>';
+		$img   = ! empty( $instance['img'] ) ? $instance['img'] : '';
+		$width = ! empty( $instance['width'] ) ? $instance['width'] : '';
+
+		?>
+		<p>
+			<label for="<?php echo $this->get_field_name( 'img' ); ?>">Изображение:</label>
+			<input name="<?php echo $this->get_field_name( 'img' ); ?>" id="<?php echo $this->get_field_id( 'img' ); ?>"
+			       class="widefat" type="text" value="<?php echo esc_url( $img ); ?>"/>
+			<input style="margin-top: 5px;" class="upload_image_button button button-primary" type="button"
+			       value="Выбрать изображение"/>
+		</p>
+		<p>
+			<label for="<?php echo $this->get_field_id( 'width' ); ?>">Ширина:</label>
+			<input class="widefat" id="<?php echo $this->get_field_id( 'width' ); ?>"
+			       name="<?php echo $this->get_field_name( 'width' ); ?>" type="text"
+			       value="<?php echo esc_attr( $width ); ?>" required/>
+		</p>
+		<?php
+		require TEMPLATEPATH . '/components/sidebar/sidebar_form.php';
 	}
 
 	public function update( $new_instance, $old_instance ) {
@@ -30,63 +56,3 @@ class Logo_Widget extends WP_Widget {
 add_action( 'widgets_init', function () {
 	register_widget( 'Logo_Widget' );
 } );
-
-/**
- * Настройка логотипа в кастомайзере
- */
-
-function logo_customize_register( $wp_customize ) {
-	$wp_customize->add_setting( 'logo_img', array(
-		'default'   => '',
-		'transport' => 'refresh',
-	) );
-	$wp_customize->add_setting( 'logo_width', array(
-		'default'   => '',
-		'transport' => 'refresh',
-	) );
-	$wp_customize->add_setting( 'logo_height', array(
-		'default'   => '',
-		'transport' => 'refresh',
-	) );
-
-	$wp_customize->add_control(
-		new WP_Customize_Image_Control(
-			$wp_customize,
-			'logo_img',
-			array(
-				'label'    => 'Логотип',
-				'section'  => 'title_tagline',
-				'settings' => 'logo_img',
-				'priority' => 9
-			)
-		)
-	);
-	$wp_customize->add_control(
-		new WP_Customize_Control(
-			$wp_customize,
-			'logo_width',
-			array(
-				'label'       => 'Ширина логотипа',
-				'section'     => 'title_tagline',
-				'settings'    => 'logo_width',
-				'description' => 'Указывается в том случае, если исходный размер изображения отличается от необходимого',
-				'priority'    => 9
-			)
-		)
-	);
-	$wp_customize->add_control(
-		new WP_Customize_Control(
-			$wp_customize,
-			'logo_height',
-			array(
-				'label'       => 'Высота логотипа',
-				'section'     => 'title_tagline',
-				'settings'    => 'logo_height',
-				'description' => 'Указывается в том случае, если исходный размер изображения отличается от необходимого',
-				'priority'    => 9
-			)
-		)
-	);
-}
-
-add_action( 'customize_register', 'logo_customize_register' );

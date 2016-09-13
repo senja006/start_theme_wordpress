@@ -1,5 +1,4 @@
 <?php
-
 get_header();
 get_template_part( 'components/header/header' );
 // $template_page = 193;

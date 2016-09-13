@@ -1,61 +1,61 @@
 <?php
 
+$acf_constructor = array(
+	'key'                   => 'group_57d4e767d387d',
+	'title'                 => 'Конструктор',
+	'fields'                => array(),
+	'location'              => array(
+		array(
+			array(
+				'param'    => 'post_type',
+				'operator' => '==',
+				'value'    => 'page',
+			),
+		),
+	),
+	'menu_order'            => 0,
+	'position'              => 'normal',
+	'style'                 => 'seamless',
+	'label_placement'       => 'top',
+	'instruction_placement' => 'label',
+	'hide_on_screen'        => '',
+);
+$acf_components  = array(
+	'key'               => 'field_57d4ed17e7677',
+	'label'             => 'Компоненты',
+	'name'              => 'components',
+	'type'              => 'flexible_content',
+	'instructions'      => '',
+	'required'          => 0,
+	'conditional_logic' => 0,
+	'wrapper'           => array(
+		'width' => '',
+		'class' => '',
+		'id'    => '',
+	),
+	'button_label'      => 'Добавить компонент',
+	'min'               => '',
+	'max'               => '',
+	'layouts'           => array(),
+);
 function register_acf_components( $components ) {
-	if ( function_exists( 'acf_add_local_field_group' ) ) {
+	global $acf_constructor;
+	global $acf_components;
+	global $acf_columns;
 
-		acf_add_local_field_group( array(
-			'key'                   => 'group_578f7be34ead4',
-			'title'                 => 'Конструктор',
-			'fields'                => array(
-				array(
-					'key'               => 'field_578f7c1a685d2',
-					'label'             => 'Компоненты',
-					'name'              => 'components',
-					'type'              => 'flexible_content',
-					'instructions'      => '',
-					'required'          => 0,
-					'conditional_logic' => 0,
-					'wrapper'           => array(
-						'width' => '',
-						'class' => '',
-						'id'    => '',
-					),
-					'button_label'      => 'Выбрать компонент',
-					'min'               => '',
-					'max'               => '',
-					'layouts'           => $components,
-				),
-			),
-			'location'              => array(
-				array(
-					array(
-						'param'    => 'post_type',
-						'operator' => '==',
-						'value'    => 'post',
-					),
-				),
-				array(
-					array(
-						'param'    => 'post_type',
-						'operator' => '==',
-						'value'    => 'page',
-					),
-				),
-				array(
-					array(
-						'param'    => 'post_type',
-						'operator' => '==',
-						'value'    => 'course',
-					),
-				),
-			),
-			'menu_order'            => 0,
-			'position'              => 'normal',
-			'style'                 => 'default',
-			'label_placement'       => 'top',
-			'instruction_placement' => 'label',
-			'hide_on_screen'        => '',
-		) );
+	$acf_columns['sub_fields'][0]['layouts'] = $components;
+	$acf_columns['sub_fields'][1]['layouts'] = $components;
+	$acf_columns['sub_fields'][2]['layouts'] = $components;
+
+	if ( function_exists( 'acf_add_local_field_group' ) ) {
+		acf_add_local_field_group( $acf_constructor );
+	}
+
+	if ( function_exists( 'acf_add_local_field' ) ) {
+		$acf_components['layouts'] = $components;
+		$acf_components['layouts'][] = $acf_columns;
+		$acf_components['parent'] = $acf_constructor['key'];
+		acf_add_local_field( $acf_components );
 	}
 }
 

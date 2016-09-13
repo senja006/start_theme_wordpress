@@ -22,6 +22,8 @@ if ( get_query_var( 'cat' ) ) {
 	$current_category_id = $current_category['term_id'];
 } elseif ( is_singular() ) {
 	$current_categories = get_the_category();
+	// global $post;
+	// $current_categories = get_the_terms( $post->ID, 'category_services' );
 	if ( $current_categories ) {
 		$current_category_id = get_object_vars( $current_categories[0] )['term_id'];
 	}

@@ -50,4 +50,15 @@ $tests = new WP_Query( array(
 	'order'          => 'ASC'
 ) );
 
+wp_reset_postdata();
+
+?>
+
+
+<?php
+/**
+ * Определение текущего url
+ */
+
+$current_url = strtolower(explode('/', $_SERVER['SERVER_PROTOCOL'])[0]) . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 ?>
