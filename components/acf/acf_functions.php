@@ -43,9 +43,9 @@ function register_acf_components( $components ) {
 	global $acf_components;
 	global $acf_columns;
 
-	$acf_columns['sub_fields'][0]['layouts'] = $components;
+	$acf_columns['sub_fields'][0]['layouts'][0]['sub_fields'][0]['layouts'] = $components;
 	$acf_columns['sub_fields'][1]['layouts'] = $components;
-	$acf_columns['sub_fields'][2]['layouts'] = $components;
+	$acf_columns['sub_fields'][2]['layouts'][0]['sub_fields'][0]['layouts'] = $components;
 
 	if ( function_exists( 'acf_add_local_field_group' ) ) {
 		acf_add_local_field_group( $acf_constructor );

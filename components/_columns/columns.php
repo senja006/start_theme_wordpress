@@ -1,8 +1,3 @@
-<?php
-$sidebar_classes = '';
-$sidebar_classes .= get_sub_field( 'flex_all_center' ) ? ' ya-flex-all-center' : '';
-?>
-
 <div class="ya-columns">
 	<div class="ya-content__row">
 		<?php if ( have_rows( 'columns_left' ) ) : ?>
@@ -10,10 +5,14 @@ $sidebar_classes .= get_sub_field( 'flex_all_center' ) ? ' ya-flex-all-center' :
 				<?php
 				while ( have_rows( 'columns_left' ) ) {
 					the_row();
-					require TEMPLATEPATH . '/components/columns/columns_sidebar_before.php';
-					$component_name = get_row_layout();
-					require TEMPLATEPATH . '/components/' . $component_name . '/' . $component_name . '.php';
-					require TEMPLATEPATH . '/components/columns/columns_sidebar_after.php';
+					$sidebar_classes = get_sidebar_classes();
+					while ( have_rows( 'sidebar_components' ) ) {
+						the_row();
+						require TEMPLATEPATH . '/components/columns/columns_sidebar_before.php';
+						$component_name = get_row_layout();
+						require TEMPLATEPATH . '/components/' . $component_name . '/' . $component_name . '.php';
+						require TEMPLATEPATH . '/components/columns/columns_sidebar_after.php';
+					}
 				}
 				?>
 			</div>
@@ -38,10 +37,14 @@ $sidebar_classes .= get_sub_field( 'flex_all_center' ) ? ' ya-flex-all-center' :
 				<?php
 				while ( have_rows( 'columns_right' ) ) {
 					the_row();
-					require TEMPLATEPATH . '/components/columns/columns_sidebar_before.php';
-					$component_name = get_row_layout();
-					require TEMPLATEPATH . '/components/' . $component_name . '/' . $component_name . '.php';
-					require TEMPLATEPATH . '/components/columns/columns_sidebar_after.php';
+					$sidebar_classes = get_sidebar_classes();
+					while ( have_rows( 'sidebar_components' ) ) {
+						the_row();
+						require TEMPLATEPATH . '/components/columns/columns_sidebar_before.php';
+						$component_name = get_row_layout();
+						require TEMPLATEPATH . '/components/' . $component_name . '/' . $component_name . '.php';
+						require TEMPLATEPATH . '/components/columns/columns_sidebar_after.php';
+					}
 				}
 				?>
 			</div>

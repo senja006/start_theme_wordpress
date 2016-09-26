@@ -1,6 +1,14 @@
 <?php
 
 /**
+ * Режим отладки
+ */
+
+$is_debug_mode = true;
+$email_debug_mode = 'senja999@mail.ru';
+
+
+/**
  * Автоматическая установка необходимых плагинов темы
  */
 
@@ -418,6 +426,7 @@ add_filter( 'mce_buttons_3', 'enable_more_buttons_TinyMCE' );
  */
 
 $components_acf = array();
+$ya_labels         = array();
 
 
 /**

@@ -314,9 +314,14 @@ add_filter( 'manage_edit-service_sortable_columns', 'add_new_service_columns' );
  */
 
 function send_template_form() {
+	global $is_debug_mode;
+	global $email_debug_mode;
+
 	$nonce = $_POST['nonce'];
 	$name  = wp_strip_all_tags( $_POST['name'] );
 	$email = sanitize_email( $_POST['email'] );
+	$attachment = null;
+	$movefile = null;
 
 	if ( ! wp_verify_nonce( $nonce, 'ajax_for_my_site' ) ) {
 		$data['status'] = 'false';
@@ -324,6 +329,17 @@ function send_template_form() {
 		echo json_encode( $data );
 
 		wp_die();
+	}
+
+	if ( $_FILES['file'] ) {
+		$file      = &$_FILES['file'];
+		$overrides = array( 'test_form' => false );
+
+		$movefile = wp_handle_upload( $file, $overrides );
+
+		if ( $movefile ) {
+			$attachment = $movefile['file'];
+		}
 	}
 
 	if ( empty( $name ) ) {
@@ -365,17 +381,19 @@ function send_template_form() {
 			update_field( 'field_579b5ec84b84d', $email, $post_id );
 		}
 
-		$email_to   = get_theme_mod( 'email_to' );
+		$email_to   = $is_debug_mode ? $email_debug_mode : get_theme_mod( 'email_to' );
 		$subject    = get_theme_mod( 'subscription_subject' );
 		$email_body = 'Имя: ' . $name . '<br><br>';
 		$email_body .= 'Email: ' . $email . '<br><br>';
 
-		if ( wp_mail( $email_to, $subject, $email_body ) ) {
+		if ( wp_mail( $email_to, $subject, $email_body, null, $attachment ) ) {
 			$data['status'] = 'ok';
 		} else {
 			$data['status'] = 'false';
 		}
 	}
+
+	unlink($movefile['file']);
 
 	echo json_encode( $data );
 

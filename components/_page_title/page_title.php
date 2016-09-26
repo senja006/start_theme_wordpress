@@ -1,6 +1,13 @@
 <?php
+
+$title = '';
+
 if ( get_sub_field( 'is_main_title' ) ) {
-	$title = $template_page ? get_the_title( $template_page ) : get_the_title();
+	if ( is_singular() ) {
+		$title = get_the_title();
+	} else {
+		$title = $template_page ? get_the_title( $template_page ) : get_the_title();
+	}
 } else {
 	$title = get_sub_field( 'title' );
 }
