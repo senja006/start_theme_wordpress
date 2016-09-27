@@ -304,9 +304,23 @@ function show_content_service_columns( $column_name, $post_ID ) {
 	}
 }
 
+function manage_wp_posts_service_sortable( $query ) {
+	if ( $query->is_main_query() && ( $orderby = $query->get( 'orderby' ) ) ) {
+		switch ( $orderby ) {
+			case 'Сортировка':
+				$query->set( 'meta_key', 'sort' );
+				$query->set( 'orderby', 'meta_value_num' );
+				break;
+		}
+	}
+}
+
+
 add_filter( 'manage_service_posts_columns', 'add_new_service_columns' );
 add_action( 'manage_service_posts_custom_column', 'show_content_service_columns', 10, 2 );
+
 add_filter( 'manage_edit-service_sortable_columns', 'add_new_service_columns' );
+add_action( 'pre_get_posts', 'manage_wp_posts_service_sortable', 1 );
 
 
 /**
