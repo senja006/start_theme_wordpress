@@ -62,3 +62,13 @@ wp_reset_postdata();
 
 $current_url = strtolower(explode('/', $_SERVER['SERVER_PROTOCOL'])[0]) . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 ?>
+
+<?php
+
+/**
+ * Форматирование числа (001)
+ */
+
+str_pad( $num, 3, '0', STR_PAD_LEFT );
+
+?>

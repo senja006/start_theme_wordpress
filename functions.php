@@ -487,3 +487,60 @@ function fjarrett_get_attachment_id_by_url( $url ) {
     // Returns null if no attachment is found
     return $attachment[0];
 }
+
+
+/**
+ * Добавление использования сессий
+ */
+
+function do_session_start() {
+    if ( ! session_id() ) {
+        session_start();
+    }
+}
+
+// add_action( 'init', 'do_session_start' );
+
+
+/**
+ * Очистка номера телефона
+ */
+
+function ya_sanitize_tel( $tel ) {
+    return str_replace( array( ' ', '+', '(', ')', '-' ), "", $tel );
+}
+
+
+/**
+ * Получение сокращенного имени вида Фамилия И.О.
+ */
+
+function get_short_name($name) {
+    $name_arr = explode( ' ', $name );
+    $surname    = $name_arr[0];
+    $name       = mb_substr( $name_arr[1], 0, 1, "UTF-8" );
+    $patronymic = mb_substr( $name_arr[2], 0, 1, "UTF-8" );
+    return $surname . ' ' . $name . '.' . $patronymic . '.';
+}
+
+
+/**
+ * Получить имя файла из url
+ */
+
+function get_file_name_by_url( $url ) {
+    $arr = explode( '/', $url );
+
+    return $arr[ count( $arr ) - 1 ];
+}
+
+
+/**
+ * Получить размер файла
+ */
+
+function get_file_size( $id ) {
+    $filesize = filesize( get_attached_file( $id ) );
+
+    return size_format( $filesize, 2 );
+}

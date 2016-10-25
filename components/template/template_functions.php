@@ -356,8 +356,14 @@ function send_template_form() {
 		}
 	}
 
-	if ( empty( $name ) ) {
-		$data['errors'][] = 'name';
+	$required_fields = array(
+		'surname'      => $surname,
+	);
+
+	foreach ( $required_fields as $name=>$value ) {
+		if ( empty( $value ) ) {
+			$data['errors'][] = $name;
+		}
 	}
 
 	if ( ! is_email( $email ) ) {
@@ -367,6 +373,7 @@ function send_template_form() {
 	if ( ! isset( $data['errors'] ) ) {
 		$subscriber = new WP_Query( array(
 			'post_type'  => 'subscriber',
+			'post_status' => 'publish',
 			'meta_query' => array(
 				array(
 					'key'   => 'email',
@@ -422,7 +429,7 @@ add_action( 'wp_ajax_nopriv_send_template_form', 'send_template_form' );
  * Количество записей на странице
  */
 function set_posts_per_page_in_template( $query ) {
-	if ( is_tax( 'name_category' ) || is_post_type_archive( 'name_type_post' ) ) {
+	if ( is_tax( 'name_category' ) || is_post_type_archive( 'name_type_post' ) && ! is_admin() && $query->is_main_query() ) {
 		$query->set( 'posts_per_page', get_theme_mod( 'name_mod' ) );
 	}
 
@@ -442,6 +449,7 @@ function set_image_size_template() {
 
 add_action( 'after_setup_theme', 'set_image_size_template' );
 //echo wp_get_attachment_image_src( get_field( 'course_info_bg_img' ), 'course_info_bg' )[0];
+//echo wp_get_attachment_image_url( $id, 'name_size' );
 
 
 /**
@@ -465,3 +473,16 @@ function my_notification() {
 	</div>';
 }
 add_action( 'admin_notices', ' my_notification ' );
+
+
+/**
+ * Добавление собственных параметров запроса
+ */
+
+function register_template_query_vars( $vars ) {
+	$vars[] = 'name';
+
+	return $vars;
+}
+
+add_filter( 'query_vars', 'register_template_query_vars' );
