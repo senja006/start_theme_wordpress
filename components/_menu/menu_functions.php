@@ -441,3 +441,74 @@ class Custom_Walker_Nav_Menu_Edit extends Walker_Nav_Menu_Edit {
 // add_filter( 'wp_edit_nav_menu_walker', function ( $class ) {
 // 	return 'Custom_Walker_Nav_Menu_Edit';
 // } );
+
+
+/**
+ * Изменение классов меню без создания Walker
+ */
+
+/**
+ * Menu registration
+ */
+add_action( 'init', function () {
+	register_nav_menu( 'header-menu', __( 'Header Menu', 'terrag' ) );
+} );
+
+/**
+ * Add menu classes for <li>
+ */
+add_filter( 'nav_menu_css_class', function ( $classes, $item, $args, $depth ) {
+	if ( $args->menu_id == 'nav-mobile' ) {
+		if ( $depth === 0 ) {
+			$classes[] = 'nav-mobile__item';
+		} else if ( $depth === 1 ) {
+			$classes[] = 'nav-mobile-dropdown__items';
+		}
+	} else {
+		if ( $depth === 0 ) {
+			$classes[] = 'header-nav__item';
+		} else if ( $depth === 1 ) {
+			$classes[] = 'header-nav-dropdown__items';
+		}
+	}
+
+	if ( in_array( 'current-menu-item', $classes ) ) {
+		$classes[] = 'active';
+	}
+
+	return $classes;
+}, 10, 4 );
+
+/**
+ * Add menu classes for <a>
+ */
+add_filter( 'nav_menu_link_attributes', function ( $atts, $item, $args, $depth ) {
+	if ( $args->menu_id == 'nav-mobile' ) {
+		if ( $depth === 0 ) {
+			$atts['class'] = 'nav-mobile__link';
+		} else if ( $depth === 1 ) {
+			$atts['class'] = 'nav-mobile-dropdown__link';
+		}
+	} else {
+		if ( $depth === 0 ) {
+			$atts['class'] = 'header-nav__link';
+		} else if ( $depth === 1 ) {
+			$atts['class'] = 'header-nav-dropdown__link';
+		}
+	}
+
+	return $atts;
+}, 10, 4 );
+
+/**
+ * Replace menu classes for nested <ul>
+ */
+add_filter( 'wp_nav_menu', function ( $menu, $args ) {
+	if ( $args->menu_id == 'nav-mobile' ) {
+		$menu = preg_replace( '/ class="sub-menu"/', '/ class="nav-mobile-dropdown" /', $menu );
+	} else {
+		$menu = preg_replace( '/ class="sub-menu"/', '/ class="header-nav-dropdown" /', $menu );
+	}
+
+	return $menu;
+}, 10, 4 );

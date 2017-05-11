@@ -111,17 +111,25 @@ add_action( 'widgets_init', function () {
 
 /**
  * Кастомайзер
+ * Customize register
  */
 
 function customize_register_template( $wp_customize ) {
+	$wp_customize->add_panel( 'menus', array(
+	  'title' => __( 'Menus' ),
+	  'description' => $description, // Include html tags such as <p>.
+	  'priority' => 160, // Mixed with top-level-section hierarchy.
+	) );
+
 	$wp_customize->add_section( 'name_template_section', array(
 		'title'    => 'Название раздела',
 		'priority' => 30,
+		'panel' => 'menus'
 	) );
 
 	$wp_customize->add_setting( 'template_settings', array(
 		'default'   => '',
-		'transport' => 'refresh',
+		'transport' => 'refresh', // 'postMessage'
 	) );
 
 	$wp_customize->add_control(
@@ -150,6 +158,16 @@ function customize_register_template( $wp_customize ) {
 			)
 		)
 	);
+
+	$wp_customize->selective_refresh->add_partial( 'contacts_phone', array(
+		'selector'        => '.header-addr__list',
+		'settings'        => 'contacts_phone',
+		'render_callback' => function () {
+			$contact_phones = get_contact_phones();
+
+			return get_html_contact_phones( $contact_phones );
+		}
+	) );
 
 	$pages     = get_pages();
 	$pages_arr = array(
@@ -486,3 +504,35 @@ function register_template_query_vars( $vars ) {
 }
 
 add_filter( 'query_vars', 'register_template_query_vars' );
+
+/**
+ * Minimizing list of content blocks (сворачивание компонентов карбона)
+ */
+add_action( 'admin_print_scripts', function () {
+	echo '<script>';
+	echo ';(function() {
+			document.addEventListener("DOMContentLoaded", function() {
+		        setTimeout(
+		            function() {
+		                jQuery(".wp-admin .carbon-group-row .carbon-btn-collapse").click();
+		            }, 1000
+		        );
+			});
+		}())';
+	echo '</script>';
+} );
+
+/**
+ * Add svg size in editor
+ */
+add_filter( 'tiny_mce_before_init', function ( $mceInit ) {
+	$styles = 'img[src*=\'.svg\'] { width: auto !important; height: auto !important; }';
+
+	if ( isset( $mceInit['content_style'] ) ) {
+		$mceInit['content_style'] .= ' ' . $styles . ' ';
+	} else {
+		$mceInit['content_style'] = $styles . ' ';
+	}
+
+	return $mceInit;
+} );

@@ -1,6 +1,6 @@
 <?php
 /**
- * Вывод места для виджетов
+ * Output sidebar
  */
 ?>
 <?php dynamic_sidebar( 'name_sidebar' ); ?>
@@ -8,7 +8,7 @@
 ===================
 <?php
 /**
- * Вывод email
+ * Output email
  */
 ?>
 <a href="mailto:<?php echo antispambot( esc_attr( $email ) ); ?>"
@@ -17,7 +17,7 @@
 ===================
 <?php
 /**
- * Запрос кастомного поста и опеределенной таксономии
+ * Custom post type and the taxonomies
  */
 
 $category_reviews_id = get_sub_field( 'category_reviews' );
@@ -38,7 +38,7 @@ $reviews             = new WP_Query( array(
 ==================
 <?php
 /**
- * Вывод с сортировкой по мета полю
+ * Sort by meta
  */
 
 $tests = new WP_Query( array(
@@ -57,7 +57,7 @@ wp_reset_postdata();
 
 <?php
 /**
- * Определение текущего url
+ * Create current url
  */
 
 $current_url = strtolower(explode('/', $_SERVER['SERVER_PROTOCOL'])[0]) . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
@@ -66,9 +66,11 @@ $current_url = strtolower(explode('/', $_SERVER['SERVER_PROTOCOL'])[0]) . '://' 
 <?php
 
 /**
- * Форматирование числа (001)
+ * Number format (001)
  */
 
 str_pad( $num, 3, '0', STR_PAD_LEFT );
 
 ?>
+
+<img src="<?php echo wp_get_attachment_image_src( $component['bg_img'], 'home_banner_bg' )[0]; ?>" alt="<?php echo esc_attr( get_post_meta( $component['bg_img'], '_wp_attachment_image_alt', true ) ); ?>">
