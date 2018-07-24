@@ -35,9 +35,14 @@ function fjarrett_get_attachment_id_by_url( $url ) {
 /**
  * Clear phone number
  */
-function ya_sanitize_tel( $tel ) {
-	return str_replace( array( ' ', '+', '(', ')', '-' ), "", $tel );
-}
+ function get_clear_phone( $str_phone ) {
+	$int_phone  = (int) preg_replace( '/[^0-9.]+/', '', $str_phone );
+	$first_char = substr( (string) $int_phone, 0, 1 );
+	$str_phone  = substr( $str_phone, strpos( $str_phone, $first_char ) );
+	$str_phone  = preg_replace( '/[^0-9.]+/', '', $str_phone );
+ 
+ 	return $str_phone;
+ }
 
 /**
  * Getting name like Lastname F.P.

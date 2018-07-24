@@ -110,7 +110,6 @@ add_action( 'widgets_init', function () {
 
 
 /**
- * Кастомайзер
  * Customize register
  */
 
@@ -122,7 +121,7 @@ function customize_register_template( $wp_customize ) {
 	) );
 
 	$wp_customize->add_section( 'name_template_section', array(
-		'title'    => 'Название раздела',
+		'title'    => 'Name section',
 		'priority' => 30,
 		'panel' => 'menus'
 	) );
@@ -137,7 +136,7 @@ function customize_register_template( $wp_customize ) {
 			$wp_customize,
 			'template_settings',
 			array(
-				'label'    => 'Название настройки',
+				'label'    => 'Label settings',
 				'section'  => 'name_template_section',
 				'settings' => 'template_settings',
 				'priority' => 9
@@ -150,10 +149,10 @@ function customize_register_template( $wp_customize ) {
 			$wp_customize,
 			'template_settings',
 			array(
-				'label'       => 'Название настройки',
+				'label'       => 'Label settings',
 				'section'     => 'name_template_section',
 				'settings'    => 'template_settings',
-				'description' => 'Указывается в том случае, если исходный размер изображения отличается от необходимого',
+				'description' => 'Description',
 				'priority'    => 9
 			)
 		)
@@ -171,7 +170,7 @@ function customize_register_template( $wp_customize ) {
 
 	$pages     = get_pages();
 	$pages_arr = array(
-		'' => '— Выбрать —'
+		'' => '— Page —'
 	);
 	foreach ( $pages as $page ) {
 		$pages_arr[ $page->ID ] = $page->post_title;
@@ -536,3 +535,8 @@ add_filter( 'tiny_mce_before_init', function ( $mceInit ) {
 
 	return $mceInit;
 } );
+
+/**
+ * Load text domain
+ */
+load_theme_textdomain( 'name', get_template_directory() . '/languages' );

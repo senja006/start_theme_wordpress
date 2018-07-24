@@ -73,4 +73,40 @@ str_pad( $num, 3, '0', STR_PAD_LEFT );
 
 ?>
 
+<?php
+/**
+ * Output image
+ */
+?>
 <img src="<?php echo wp_get_attachment_image_src( $component['bg_img'], 'home_banner_bg' )[0]; ?>" alt="<?php echo esc_attr( get_post_meta( $component['bg_img'], '_wp_attachment_image_alt', true ) ); ?>">
+<img src="{{ wp_get_attachment_image_src( $item['img'], 'quarter_content' )[0] }}" srcset="{{ wp_get_attachment_image_src( $item['img'], 'quarter_content' )[0] }} 1x, {{ wp_get_attachment_image_src( $item['img'], 'quarter_content_retina' )[0] }} 2x" alt="{{ get_post_meta( $item['img'], '_wp_attachment_image_alt', true ) }}">
+
+<style>
+    .banner {
+        background-image: url({{ wp_get_attachment_image_src( $component['img'], 'banner' )[0] }});
+    }
+
+    @media screen and (min-resolution: 192dpi), screen and (-webkit-min-device-pixel-ratio: 2) {
+        .banner {
+            background-image: url({{ wp_get_attachment_image_src( $component['img'], 'banner_retina' )[0] }});
+        }
+    }
+</style>
+
+
+<?php
+/**
+ * Output field of component by carbon
+ */
+?>
+<?php if(isset($component['']) && $component['']) : ?>
+	<?php echo $component['']; ?>
+<?php endif; ?>
+
+
+
+
+
+
+
+

@@ -3,16 +3,18 @@
 use Carbon_Fields\Container;
 use Carbon_Fields\Field;
 
-$carbon_components
-	->add_fields( 'lib_load', array(
-		Field::make( 'relationship', 'lib_select', __( 'Load from library', 'example' ) )
-		     ->set_post_type( 'lib_type' )
-		     ->set_max( 1 )
-	) );
+if ( isset( $carbon_components ) ) {
+	$carbon_components
+		->add_fields( 'lib_load', array(
+			Field::make( 'relationship', 'lib_select', __( 'Load from library', 'krn' ) )
+			     ->set_post_type( 'lib_type' )
+			     ->set_max( 1 )
+		) );
 
-Container::make( 'post_meta', __( 'Content blocks', 'example' ) )
-         ->show_on_post_type( array( 'page', 'lib_type' ) )
-         ->add_fields( array( $carbon_components ) );
+	Container::make( 'post_meta', __( 'Content blocks', 'krn' ) )
+	         ->show_on_post_type( array( 'page', 'lib_type' ) )
+	         ->add_fields( array( $carbon_components ) );
+}
 
 /**
  * Adding a component library
@@ -83,3 +85,17 @@ function carbon_get_component_data( $component ) {
 
 	return [ $component, $name_component ];
 }
+
+/**
+ * Checking active of carbon
+ */
+function carbon_fields_is_active() {
+	return function_exists( 'carbon_get_post_meta' );
+}
+
+/**
+ * Remove post editor from pages
+ */
+add_action( 'admin_init', function () {
+	remove_post_type_support( 'page', 'editor' );
+} );

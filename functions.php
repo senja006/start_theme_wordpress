@@ -47,13 +47,13 @@ add_action( 'wp_print_scripts', function () {
 	}
 }, 100 );
 
-
 /**
  * Include scripts and styles
  */
 add_action( 'wp_enqueue_scripts', function () {
-	wp_enqueue_style( 'my-style', get_template_directory_uri() . '/static/css/main.css' );
-	wp_enqueue_script( 'my-script', get_template_directory_uri() . '/static/js/main.js', array(), '', true );
+	$min_script = env( 'WP_ENV' ) === 'production' ? '.min' : '';
+	wp_enqueue_style( 'my-style', get_template_directory_uri() . "/static/css/main$min_script.css" );
+	wp_enqueue_script( 'my-script', get_template_directory_uri() . "/static/js/main$min_script.js", array(), '', true );
 } );
 add_action( 'admin_enqueue_scripts', function () {
 	wp_enqueue_style( 'my-admin-style', get_template_directory_uri() . '/style.css' );
@@ -117,7 +117,14 @@ add_action( 'init', function () {
 /**
  * Carbon components
  */
-$carbon_components = Field::make( 'complex', 'components', __( 'Content blocks', 'example' ) );
+if ( function_exists( 'carbon_get_post_meta' ) ) {
+	$carbon_components = Field::make( 'complex', 'components', __( 'Content blocks', 'krn' ) )
+	                          ->set_collapsed( true );
+} else {
+	if ( ! is_admin() ) {
+		echo '<h1 style="margin-top: 200px; margin-bottom: 100px; text-align: center; color: red; font-size: 50px;">You must activate of Carbon Fields Plugin</h1>';
+	}
+}
 
 /**
  * Include functions.php of components
@@ -136,4 +143,6 @@ foreach ( $dirs_components as $dir ) {
 /**
  * Require carbon component
  */
-require_once TEMPLATEPATH . '/components/carbon.php';
+if(isset($carbon_components)) {
+	require_once __DIR__ . '/components/carbon.php';
+}
