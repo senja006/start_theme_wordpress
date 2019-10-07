@@ -9,14 +9,14 @@
 /**
  * HTML compression
  */
-add_action( 'get_header', function () {
-	if ( env( 'WP_ENV' ) !== 'production' ) {
-		return;
-	}
+// add_action( 'get_header', function () {
+// 	if ( env( 'WP_ENV' ) !== 'production' ) {
+// 		return;
+// 	}
 
-	ob_start( 'wp_html_compression_finish' );
+// 	ob_start( 'wp_html_compression_finish' );
 
-} );
+// } );
 
 class WP_HTML_Compression {
 	protected $compress_css = true;

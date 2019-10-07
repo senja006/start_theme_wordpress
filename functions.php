@@ -1,6 +1,11 @@
 <?php
 
-use Carbon_Fields\Field;
+/**
+ * Enabling debugging mode
+ */
+$is_debug = true; // true, false
+
+// use Carbon_Fields\Field;
 
 /**
  * Add theme support
@@ -50,13 +55,18 @@ add_action( 'wp_print_scripts', function () {
 /**
  * Include scripts and styles
  */
+//$path_to_static = get_template_directory_uri();
+$path_to_static = '';
 add_action( 'wp_enqueue_scripts', function () {
-	$min_script = env( 'WP_ENV' ) === 'production' ? '.min' : '';
-	wp_enqueue_style( 'my-style', get_template_directory_uri() . "/static/css/main$min_script.css" );
-	wp_enqueue_script( 'my-script', get_template_directory_uri() . "/static/js/main$min_script.js", array(), '', true );
+	global $is_debug;
+	global $path_to_static;
+	$min_script = $is_debug === 'true' ? '.min' : '';
+	wp_enqueue_style( 'my-style', $path_to_static . "/static/css/main$min_script.css" );
+	wp_enqueue_script( 'my-script', $path_to_static . "/static/js/main$min_script.js", array(), '', true );
 } );
 add_action( 'admin_enqueue_scripts', function () {
-	wp_enqueue_style( 'my-admin-style', get_template_directory_uri() . '/style.css' );
+	global $path_to_static;
+	wp_enqueue_style( 'my-admin-style', $path_to_static . '/style.css' );
 } );
 
 /**
@@ -83,29 +93,6 @@ add_action( 'wp_enqueue_scripts', function () {
 }, 99 );
 
 /**
- * Setup text editor
- */
-add_filter( 'tiny_mce_before_init', function () {
-	$in['wordpress_adv_hidden'] = false;
-
-	return $in;
-} );
-add_filter( 'mce_buttons_3', function () {
-//	$buttons[] = 'fontselect';
-	$buttons[] = 'fontsizeselect';
-//  $buttons[] = 'styleselect';
-	$buttons[] = 'backcolor';
-//  $buttons[] = 'newdocument';
-	$buttons[] = 'cut';
-	$buttons[] = 'copy';
-//  $buttons[] = 'charmap';
-//  $buttons[] = 'hr';
-	$buttons[] = 'visualaid';
-
-	return $buttons;
-} );
-
-/**
  * Adding using session
  */
 add_action( 'init', function () {
@@ -117,7 +104,7 @@ add_action( 'init', function () {
 /**
  * Carbon components
  */
-if ( function_exists( 'carbon_get_post_meta' ) ) {
+if ( function_exists( 'get_field' ) ) {
 	$carbon_components = Field::make( 'complex', 'components', __( 'Content blocks', 'krn' ) )
 	                          ->set_collapsed( true );
 } else {
